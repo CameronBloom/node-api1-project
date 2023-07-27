@@ -7,13 +7,32 @@ const server = express()
 
 server.get("/api/users", (req, res) => {
   UserModel.find()
-    .then(() => {
-      throw new Error("nooooo")
+    .then(users => {
+      res.json(users)
     })
     .catch(err => {
       res.status(500).json({
         message: "error getting users",
-        error: err.message
+        error: err.message,
+        stack: err.stack
+      })
+    })
+})
+
+server.get("/api/users/:id", (req, res) => {
+  UserModel.findById(req.params.id)
+    .then(user => {
+      if (!user) { 
+        res.status(404).json({message: "The user with the specified ID does not exist"})
+      } else {
+        res.json(user)
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: "error getting user",
+        error: err.message,
+        stack: err.stack
       })
     })
 })
